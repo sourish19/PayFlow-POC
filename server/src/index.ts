@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 
 import dbConnect from './config/db';
 import ErrorMiddleware from './middlewares/errorMiddleware';
+import router from './routes';
+import corsConfig from './config/cors';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -16,14 +18,12 @@ dbConnect()
     console.error('Error occured while connecting DB --> ', err);
   });
 
+app.use(corsConfig())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Dummy
-app.get('/', (req, res) => {
-  res.json({ message: 'success' });
-});
+app.use('/api/v1',router)
 
 app.use(ErrorMiddleware);
 
