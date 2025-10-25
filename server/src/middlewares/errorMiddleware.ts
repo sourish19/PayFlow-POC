@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { z } from 'zod';
 
-import ApiError, { ValidationError } from '../utils/apiError';
+import ApiError from '../utils/apiError';
 
 const ErrorMiddleware = (
   error: unknown,
@@ -9,11 +8,6 @@ const ErrorMiddleware = (
   res: Response,
   _next: NextFunction
 ) => {
-  // Zod Validation Error
-  if (error instanceof z.ZodError) {
-    console.log('Zod error --> ', error);
-    return res.status(422).json(new ValidationError());
-  }
   // Thrown Error from asynchandler
   if (error instanceof ApiError) {
     return res.status(error.status).json({

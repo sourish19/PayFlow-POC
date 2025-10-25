@@ -42,7 +42,7 @@ export const signup = asyncHandler(async (req, res, _next) => {
 });
 
 export const signin = asyncHandler(async (req, res, _next) => {
-  const { email, password } = handleZodError(validateSignup(req.body))
+  const { email, password } = handleZodError(validateSignup(req.body));
 
   const findUser = await User.findOne({ email });
 
@@ -52,9 +52,13 @@ export const signin = asyncHandler(async (req, res, _next) => {
 
   if (!verifyPassword) throw new ForbiddenError('Invalid credentials');
 
-  const token = jwt.sign({ email }, String(process.env.JWT_SECRET), {
-    expiresIn: '1d',
-  });
+  const token = jwt.sign(
+    { _id: findUser._id.toString(), email },
+    String(process.env.JWT_SECRET),
+    {
+      expiresIn: '1d',
+    }
+  );
 
   res
     .cookie('token', token)
@@ -67,3 +71,5 @@ export const signin = asyncHandler(async (req, res, _next) => {
       )
     );
 });
+
+export const getUser = asyncHandler(async (req, res) => {});
