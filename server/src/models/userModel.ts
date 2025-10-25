@@ -1,38 +1,39 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+import { Schema, InferRawDocType, model, Document } from 'mongoose';
+import * as argon2 from 'argon2';
 import { InternalServerError } from '../utils/apiError';
 
-const userSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      unique: true,
-      trim: true,
-      required: true,
-    },
-    email: {
-      type: String,
-      unique: true,
-      required: true,
-      lowercase: true,
-      trim: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    token: {
-      type: String,
-    },
+const schemaDefinition = {
+  name: {
+    type: String,
+    unique: true,
+    trim: true,
+    required: true,
   },
-  { timestamps: true }
-);
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+    lowercase: true,
+    trim: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  token: {
+    type: String,
+  } as const,
+};
+
+const userSchema = new Schema(schemaDefinition, { timestamps: true });
+// An interface describing how the data is saved in MongoDB
+export type RawUserDocument = InferRawDocType<typeof schemaDefinition>;
 
 userSchema.pre('save', async function (next) {
-  const user = this;
+  const user = this as RawUserDocument & Document;
   if (!user.isModified('password')) return next();
   try {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const hashedPassword = await argon2.hash(String(user.password));
     user.password = hashedPassword;
     return next();
   } catch (error) {
@@ -41,4 +42,16 @@ userSchema.pre('save', async function (next) {
   }
 });
 
-export const User = mongoose.model('user', userSchema);
+userSchema.methods.verifyPassword = async function (
+  password: string
+): Promise<Boolean> {
+  const user = this as Document & RawUserDocument;
+  try {
+    const isPasswordValid = await argon2.verify(user.password, password);
+    return isPasswordValid;
+  } catch (error) {
+    throw new InternalServerError();
+  }
+};
+
+export const User = model('user', userSchema);

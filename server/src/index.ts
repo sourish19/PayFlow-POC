@@ -18,12 +18,12 @@ dbConnect()
     console.error('Error occured while connecting DB --> ', err);
   });
 
-app.use(corsConfig())
+app.use(corsConfig());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use('/api/v1',router)
+app.use('/api/v1', router);
 
 app.use(ErrorMiddleware);
 
