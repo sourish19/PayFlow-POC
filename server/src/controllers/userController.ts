@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
-import { z } from 'zod';
 
 import { User } from '../models/userModel';
 import asyncHandler from '../utils/asyncHandler';
@@ -17,7 +16,6 @@ import handleZodError from '../utils/handleZodError';
 
 export const signup = asyncHandler(async (req, res, _next) => {
   const { name, email, password } = handleZodError(validateSignup(req.body));
-  console.log('name email password --> ', name, email, password);
 
   const findUser = await User.findOne({ email, name })
     .select('-password')
@@ -44,7 +42,7 @@ export const signup = asyncHandler(async (req, res, _next) => {
 });
 
 export const signin = asyncHandler(async (req, res, _next) => {
-  const { email, password } = req.body;
+  const { email, password } = handleZodError(validateSignup(req.body))
 
   const findUser = await User.findOne({ email });
 

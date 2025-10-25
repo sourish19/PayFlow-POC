@@ -12,24 +12,22 @@ const ErrorMiddleware = (
   // Zod Validation Error
   if (error instanceof z.ZodError) {
     console.log('Zod error --> ', error);
-    res.status(422).json(new ValidationError());
+    return res.status(422).json(new ValidationError());
   }
   // Thrown Error from asynchandler
   if (error instanceof ApiError) {
-    res.status(error.status).json({
+    return res.status(error.status).json({
       success: error.success,
       message: error.message,
       code: error.code,
       data: error.data,
       error: error.error,
     });
-    // Unexpected Error
-    res.status(500).json({
+  } else {
+    return res.status(500).json({
       success: false,
       message: 'Something went wrong',
-      code: 'INTERNAL_SERVER_ERROR',
-      data: [],
-      error: [],
+      code: 'SERVER_ERROR',
     });
   }
 };

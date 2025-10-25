@@ -1,44 +1,39 @@
 {
-  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // File Layout
-    // "rootDir": "./src",
-    // "outDir": "./dist",
-
-    // Environment Settings
-    // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
-    "target": "esnext",
-    "types": [],
-    // For nodejs:
-    // "lib": ["esnext"],
-    // "types": ["node"],
-    // and npm install -D @types/node
-
-    // Other Outputs
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-
-    // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
-    // Style Options
-    // "noImplicitReturns": true,
-    // "noImplicitOverride": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "noPropertyAccessFromIndexSignature": true,
-
-    // Recommended Options
-    "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
-    "skipLibCheck": true,
-  }
+    // COMPILATION TARGET & MODULE SYSTEM
+    "target": "es2020",                    // Compile to ES2020 JavaScript syntax (supports modern features like optional chaining, nullish coalescing)
+    "module": "es2020",                    // Use ES2020 module system (import/export) - required for import.meta
+    "lib": ["ES2020"],                     // Include ES2020 standard library type definitions (Promise, Array methods, etc.)
+    "moduleResolution": "node",            // Use Node.js-style module resolution algorithm to find imports from node_modules
+    
+    // DIRECTORY STRUCTURE
+    "outDir": "./dist",                    // Output compiled JavaScript files to ./dist folder
+    "rootDir": "./src",                    // All source TypeScript files must be under ./src (prevents output structure issues)
+    
+    // STRICT TYPE CHECKING (Best Practices)
+    "strict": true,                        // Enable ALL strict type checking options (noImplicitAny, strictNullChecks, etc.)
+    "noUnusedLocals": true,                // Error on declared but unused local variables (catches dead code)
+    "noUnusedParameters": true,            // Error on declared but unused function parameters (catches dead code)
+    "noImplicitReturns": true,             // Error if not all code paths in function return a value (prevents undefined returns)
+    "noFallthroughCasesInSwitch": true,    // Error on switch case fallthrough without break/return (prevents bugs)
+    "noUncheckedIndexedAccess": true,      // Add 'undefined' to array/object index access types (safer array[i] usage)
+    
+    // MODULE RESOLUTION & INTEROP
+    "esModuleInterop": true,               // Allow default imports from CommonJS modules (import express from 'express')
+    "forceConsistentCasingInFileNames": true, // Error if import casing doesn't match file casing (prevents cross-OS issues)
+    "resolveJsonModule": true,             // Allow importing .json files as modules
+    "skipLibCheck": true,                  // Skip type checking of declaration files (.d.ts) - faster compilation
+    
+    // OUTPUT CONFIGURATION
+    "declaration": false,                  // Don't generate .d.ts type declaration files (set true for libraries)
+    "sourceMap": false,                    // Don't generate .map files (set true for debugging production)
+    "removeComments": true,                // Strip comments from output JavaScript (smaller bundle size)
+    
+    // TYPE DEFINITIONS
+    "typeRoots": ["./node_modules/@types", "./@types"] // Directories to look for type definitions (@types/node, custom types)
+  },
+  
+  // FILES TO INCLUDE/EXCLUDE
+  "include": ["src/**/*"],                 // Include all files under src directory and subdirectories
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"] // Exclude dependencies, output, and test files from compilation
 }
