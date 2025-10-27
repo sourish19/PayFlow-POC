@@ -29,7 +29,7 @@ export const getBalance = asyncHandler(async (req, res) => {
 });
 
 export const transferMoney = asyncHandler(async (req, res) => {
-  const { receiverId, amount } = handleZodError(validateTransfer(req.body));
+  const { receverId, amount } = handleZodError(validateTransfer(req.body));
 
   if (!req.user || !('_id' in req.user))
     throw new NotFoundError('User not found');
@@ -39,34 +39,41 @@ export const transferMoney = asyncHandler(async (req, res) => {
   const session = await mongoose.startSession();
 
   try {
-    await session.withTransaction(async () => {
-      const sender = await Account.findOne({ userId }).session(session).lean();
+    session.startTransaction();
 
-      if (!sender) throw new NotFoundError('Sender not found');
+    const sender = await Account.findOne({ userId }).session(session);
 
-      const receiver = await Account.findOne({ userId: receiverId })
-        .session(session)
-        .lean();
+    if (!sender) throw new NotFoundError('Sender not found');
 
-      if (!receiver) throw new NotFoundError('Receiver not found');
+    const receiver = await Account.findOne({ userId: receverId }).session(
+      session
+    );
 
-      if (sender.balance < amount)
-        throw new BadRequestError('Insufficient balance');
+    if (!receiver) throw new NotFoundError('Receiver not found');
 
-      await Account.updateOne(
-        { userId },
-        { $inc: { balance: -amount } }
-      ).session(session);
+    if (sender.balance < amount)
+      throw new BadRequestError('Insufficient balance');
 
-      await Account.updateOne(
-        { userId: receiverId },
-        { $inc: { balance: amount } }
-      ).session(session);
-    });
+    await Account.updateOne(
+      { userId },
+      { $inc: { balance: -amount } },
+      { session }
+    );
+
+    await Account.updateOne(
+      { userId: receverId },
+      { $inc: { balance: amount } },
+      { session }
+    );
+
+    await session.commitTransaction()
+
     return res
       .status(200)
       .json(new ApiResponse(200, 'Transfer successful', []));
   } catch (error) {
+    console.error('Err --> ', error);
+
     throw error;
   } finally {
     await session.endSession();
