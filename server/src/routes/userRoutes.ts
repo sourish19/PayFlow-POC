@@ -1,11 +1,14 @@
 import { Router } from 'express';
 
-import { signup, signin } from '../controllers/userController';
-import isAlreadyLogedIn from '../middlewares/isAlreadyLogedIn';
+import { signup, signin, getUser, getFilteredUser } from '../controllers/userController';
+import isAlreadyLoggedIn from '../middlewares/isAlreadyLogedIn';
+import isLoggedIn from '../middlewares/isLoggedIn';
 
 const userRouter = Router();
 
-userRouter.route('/signup').post(isAlreadyLogedIn, signup);
-userRouter.route('/signin').post(isAlreadyLogedIn, signin);
+userRouter.route('/signup').post(isAlreadyLoggedIn, signup);
+userRouter.route('/signin').post(isAlreadyLoggedIn, signin);
+userRouter.route('/').get(isLoggedIn, getUser);
+userRouter.route('/bulk').get(isLoggedIn, getFilteredUser);
 
 export default userRouter;

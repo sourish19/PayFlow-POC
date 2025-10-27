@@ -9,22 +9,25 @@ import {
   NotFoundError,
   ForbiddenError,
 } from '../utils/apiError';
-import ApiResponse from '../utils/apiResponse';
+import ApiResponse from '../utils/apiResponse'; 
 import sanatizeUser from '../utils/sanitizeUser';
-import { validateSignup } from '../validations/userValidation';
+import { validateSignup, validateSignin } from '../validations/userValidation';
 import handleZodError from '../utils/handleZodError';
 
-export const signup = asyncHandler(async (req, res, _next) => {
-  const { name, email, password } = handleZodError(validateSignup(req.body));
+export const signup = asyncHandler(async (req, res) => {
+  const { firstName, lastName, email, password } = handleZodError(
+    validateSignup(req.body)
+  );
 
-  const findUser = await User.findOne({ email, name })
+  const findUser = await User.findOne({ email, firstName, lastName })
     .select('-password')
     .lean();
 
   if (findUser) throw new ConflictError('Email already taken');
 
   const user = await User.create({
-    name,
+    firstName,
+    lastName,
     email,
     password,
   });
@@ -41,8 +44,8 @@ export const signup = asyncHandler(async (req, res, _next) => {
     );
 });
 
-export const signin = asyncHandler(async (req, res, _next) => {
-  const { email, password } = handleZodError(validateSignup(req.body));
+export const signin = asyncHandler(async (req, res) => {
+  const { email, password } = handleZodError(validateSignin(req.body));
 
   const findUser = await User.findOne({ email });
 
@@ -72,4 +75,40 @@ export const signin = asyncHandler(async (req, res, _next) => {
     );
 });
 
-export const getUser = asyncHandler(async (req, res) => {});
+export const getUser = asyncHandler(async (req, res) => {
+  if (!req.user || !('_id' in req?.user))
+    throw new NotFoundError('User not found');
+
+  const findUser = await User.findById(req.user._id).select('-password -token');
+
+  if (!findUser) throw new NotFoundError('User not found');
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, 'User found successfully', sanatizeUser(findUser))
+    );
+});
+
+export const getFilteredUser = asyncHandler(async (req, res) => {
+  const { filter } = req.query;
+
+  const findUsers = await User.find({
+    $or: [
+      { firstName: { $regex: filter, $options: 'i' } },
+      { lastName: { $regex: filter, $options: 'i' } },
+    ],
+  }).select('-password -token');
+
+  if (!findUsers) throw new NotFoundError('Users not found');
+
+  const santizedData = findUsers.map((user) => {
+    return sanatizeUser(user);
+  });
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, 'Users found successfully', santizedData)
+    );
+});

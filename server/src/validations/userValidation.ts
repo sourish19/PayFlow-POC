@@ -1,11 +1,17 @@
 import { z } from 'zod';
 
-export const UserValidationSchema = z.object({
-  name: z
+const UserValidationSchema = z.object({
+  firstName: z
     .string()
     .trim()
-    .min(3, { message: 'Name must be at least 3 characters' })
-    .max(20, { message: 'Name cannot exceed 50 characters' }),
+    .min(3, { message: 'First Name must be at least 3 characters' })
+    .max(20, { message: 'First Name cannot exceed 50 characters' }),
+
+  lastName: z
+    .string()
+    .trim()
+    .min(3, { message: 'Last Name must be at least 3 characters' })
+    .max(20, { message: 'Last Name cannot exceed 50 characters' }),
 
   email: z
     .email({ message: 'Invalid email address' })
@@ -31,5 +37,15 @@ export const UserValidationSchema = z.object({
   ),
 });
 
+const SigninValidationSchema = UserValidationSchema.pick({
+  email: true,
+  password: true,
+});
+
+export const validateJwt = (data: unknown) => z.jwt().safeParse(data);
+
 export const validateSignup = (data: unknown) =>
   UserValidationSchema.safeParse(data); // if true return data otherwise ZodError
+
+export const validateSignin = (data: unknown) =>
+  SigninValidationSchema.safeParse(data);

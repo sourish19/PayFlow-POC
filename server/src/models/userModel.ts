@@ -3,11 +3,17 @@ import * as argon2 from 'argon2';
 import { InternalServerError } from '../utils/apiError';
 
 const schemaDefinition = {
-  name: {
+  firstName: {
     type: String,
-    unique: true,
     trim: true,
     required: true,
+    maxLength: 50
+  },
+  lastName: {
+    type: String,
+    trim: true,
+    required: true,
+    maxLength: 50
   },
   email: {
     type: String,

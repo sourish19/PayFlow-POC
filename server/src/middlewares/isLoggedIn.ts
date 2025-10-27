@@ -1,7 +1,10 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
+
 import asyncHandler from '../utils/asyncHandler';
 import { UnauthorizedError } from '../utils/apiError';
 import { User } from '../models/userModel';
+import handleZodError from '../utils/handleZodError';
+import { validateJwt } from '../validations/userValidation';
 
 const isLoggedIn = asyncHandler(async (req, _res, next) => {
   try {
@@ -12,6 +15,8 @@ const isLoggedIn = asyncHandler(async (req, _res, next) => {
     const bearerToken = bearer?.split('Bearer ')[1];
 
     const tokenToVerify = cookieToken || bearerToken;
+
+    handleZodError(validateJwt(tokenToVerify));
 
     if (!tokenToVerify) throw new UnauthorizedError();
 

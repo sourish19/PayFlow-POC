@@ -5,26 +5,30 @@ import { User } from '../models/userModel';
 import { UnauthorizedError } from '../utils/apiError';
 
 // for unproctected routes
-const isAlreadyLogedIn = asyncHandler(async (req, _res, next) => {
+const isAlreadyLoggedIn = asyncHandler(async (req, _res, next) => {
   const { token } = req.cookies;
+  if (!token) return next(); // No token user not logged in
 
-  if (!token) return next();
+  try {
+    const decoded = jwt.verify(
+      token,
+      String(process.env.JWT_SECRET)
+    ) as JwtPayload;
 
-  const isTokenValid = jwt.verify(
-    token,
-    String(process.env.JWT_SECRET)
-  ) as JwtPayload;
+    // Invalid token structure
+    if (typeof decoded !== 'object' || !('_id' in decoded)) return next();
 
-  if (typeof isTokenValid !== 'object' || !('_id' in isTokenValid))
-    return next();
+    const user = await User.findById(decoded._id).select('-password').lean();
 
-  const user = await User.findById(isTokenValid?._id)
-    .select('-password')
-    .lean();
+    if (!user) return next();
 
-  if (!user) return next();
+    // If valid token and user exists thn block the user
+    throw new UnauthorizedError('You are already logged in');
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) return next();
 
-  throw new UnauthorizedError();
+    throw error;
+  }
 });
 
-export default isAlreadyLogedIn;
+export default isAlreadyLoggedIn;

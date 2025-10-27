@@ -6,7 +6,7 @@ import { RawUserDocument } from '../models/userModel';
 const sanatizeUser = (user: HydratedDocument<RawUserDocument>) => {
   const sanitize = {
     id: String(user._id),
-    name: user.name,
+    fullName: user.firstName + ' ' + user.lastName,
     email: user.email,
   };
   return sanitize;
