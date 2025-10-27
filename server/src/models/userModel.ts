@@ -7,13 +7,13 @@ const schemaDefinition = {
     type: String,
     trim: true,
     required: true,
-    maxLength: 50
+    maxLength: 50,
   },
   lastName: {
     type: String,
     trim: true,
     required: true,
-    maxLength: 50
+    maxLength: 50,
   },
   email: {
     type: String,
@@ -28,8 +28,8 @@ const schemaDefinition = {
   },
   token: {
     type: String,
-  } as const,
-};
+  },
+} as const;
 
 const userSchema = new Schema(schemaDefinition, { timestamps: true });
 // An interface describing how the data is saved in MongoDB

@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
 
 import { User } from '../models/userModel';
+import { Account } from '../models/accountsModel';
 import asyncHandler from '../utils/asyncHandler';
 import {
   ConflictError,
@@ -9,7 +10,7 @@ import {
   NotFoundError,
   ForbiddenError,
 } from '../utils/apiError';
-import ApiResponse from '../utils/apiResponse'; 
+import ApiResponse from '../utils/apiResponse';
 import sanatizeUser from '../utils/sanitizeUser';
 import { validateSignup, validateSignin } from '../validations/userValidation';
 import handleZodError from '../utils/handleZodError';
@@ -34,6 +35,19 @@ export const signup = asyncHandler(async (req, res) => {
 
   if (!user) {
     console.log('Unable to create user -->', user);
+    throw new InternalServerError();
+  }
+
+  // This is so that I don’t have to integrate it with banks and give users random balances to start with
+  const randomBalance = Math.random() * (10000 - 1) + 1;
+
+  const userAccount = await Account.create({
+    userId: user._id,
+    balance: randomBalance,
+  });
+
+  if (!userAccount) {
+    console.log('Unable to create user account -->', userAccount);
     throw new InternalServerError();
   }
 
@@ -108,7 +122,5 @@ export const getFilteredUser = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    .json(
-      new ApiResponse(200, 'Users found successfully', santizedData)
-    );
+    .json(new ApiResponse(200, 'Users found successfully', santizedData));
 });

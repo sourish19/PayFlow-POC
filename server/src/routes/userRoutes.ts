@@ -1,6 +1,11 @@
 import { Router } from 'express';
 
-import { signup, signin, getUser, getFilteredUser } from '../controllers/userController';
+import {
+  signup,
+  signin,
+  getUser,
+  getFilteredUser,
+} from '../controllers/userController';
 import isAlreadyLoggedIn from '../middlewares/isAlreadyLogedIn';
 import isLoggedIn from '../middlewares/isLoggedIn';
 
