@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write ./src"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
@@ -15,10 +16,14 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.553.0",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.5",
     "tailwind-merge": "^3.4.0",
-    "tailwindcss": "^4.1.17"
+    "tailwindcss": "^4.1.17",
+    "tanstack-query": "^1.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
