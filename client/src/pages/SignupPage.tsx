@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { UseFormReturn } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -16,19 +17,34 @@ import { Separator } from '@/components/ui/separator';
 import AuthForm from '@/components/auth/AuthForm';
 import { signupSchema } from '@/validations/authValidation';
 
+import type { FieldConfig } from '@/components/auth/AuthForm';
+
+export type SignupFormProps = {
+  type: 'signup';
+  form: UseFormReturn<z.infer<typeof signupSchema>>;
+  onSubmit: (values: z.infer<typeof signupSchema>) => void;
+};
+
 const SignupPage = () => {
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     mode: 'onChange',
     defaultValues: {
-      email: '',
-      password: '',
       firstName: '',
       lastName: '',
+      email: '',
+      password: '',
     },
   });
 
-//   const onSubmit = (data: z.infer<typeof signupSchema>) => {};
+  const fields: FieldConfig<z.infer<typeof signupSchema>>[] = [
+    { name: 'firstName', label: 'First Name', type: 'text' },
+    { name: 'lastName', label: 'Last Name', type: 'text' },
+    { name: 'email', label: 'Email', type: 'email' },
+    { name: 'password', label: 'Password', type: 'password' },
+  ];
+
+  //   const onSubmit = (data: z.infer<typeof signupSchema>) => {};
 
   return (
     <div className="relative flex h-auto min-h-screen items-center justify-center overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8">
@@ -47,7 +63,13 @@ const SignupPage = () => {
         <CardContent>
           {/* Login Form */}
           <div className="space-y-4">
-            <AuthForm type="signup" form={form} onSubmit={(values) => console.log(values)}/>
+            <AuthForm
+              fields={fields}
+              form={form}
+              onSubmit={(values: z.infer<typeof signupSchema>) =>
+                console.log(values)
+              }
+            />
 
             <p className="text-muted-foreground text-center">
               Already have an account?{' '}

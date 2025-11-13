@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { UseFormReturn } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +17,14 @@ import { Separator } from '@/components/ui/separator';
 import AuthForm from '@/components/auth/AuthForm';
 import { loginSchema } from '@/validations/authValidation';
 
+import type { FieldConfig } from '@/components/auth/AuthForm';
+
+export type LoginFormProps = {
+  type: 'signin';
+  form: UseFormReturn<z.infer<typeof loginSchema>>;
+  onSubmit: (values: z.infer<typeof loginSchema>) => void;
+};
+
 const LoginPage = () => {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -25,6 +34,11 @@ const LoginPage = () => {
       password: '',
     },
   });
+
+  const fields: FieldConfig<z.infer<typeof loginSchema>>[] = [
+    { name: 'email', label: 'Email', type: 'email' },
+    { name: 'password', label: 'Password', type: 'password' },
+  ];
 
   // const onSubmit = () => {};
 
@@ -45,7 +59,13 @@ const LoginPage = () => {
         <CardContent>
           {/* Login Form */}
           <div className="space-y-4">
-            <AuthForm type="signin" form={form} onSubmit={(values) => console.log(values)} />
+            <AuthForm
+              fields={fields}
+              form={form}
+              onSubmit={(values: z.infer<typeof loginSchema>) =>
+                console.log(values)
+              }
+            />
 
             <p className="text-muted-foreground text-center">
               New on our platform?{' '}
