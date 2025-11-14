@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { isAxiosError } from 'axios';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -12,12 +14,37 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
 
 import AuthForm from '@/components/auth/AuthForm';
 import { signupSchema } from '@/validations/authValidation';
 
 import type { SignupSchema } from '@/validations/authValidation';
 import type { FieldConfig } from '@/components/auth/AuthForm';
+
+import { signupApi } from '@/api/auth/signup';
+
+const fields: FieldConfig<SignupSchema>[] = [
+  {
+    name: 'firstName',
+    label: 'First Name',
+    type: 'text',
+    placeholder: 'John',
+  },
+  { name: 'lastName', label: 'Last Name', type: 'text', placeholder: 'Doe' },
+  {
+    name: 'email',
+    label: 'Email',
+    type: 'email',
+    placeholder: 'jhondoe@example.com',
+  },
+  {
+    name: 'password',
+    label: 'Password',
+    type: 'password',
+    placeholder: '********',
+  },
+];
 
 const SignupPage = () => {
   const form = useForm<SignupSchema>({
@@ -31,29 +58,19 @@ const SignupPage = () => {
     },
   });
 
-  const fields: FieldConfig<SignupSchema>[] = [
-    {
-      name: 'firstName',
-      label: 'First Name',
-      type: 'text',
-      placeholder: 'John',
-    },
-    { name: 'lastName', label: 'Last Name', type: 'text', placeholder: 'Doe' },
-    {
-      name: 'email',
-      label: 'Email',
-      type: 'email',
-      placeholder: 'jhondoe@example.com',
-    },
-    {
-      name: 'password',
-      label: 'Password',
-      type: 'password',
-      placeholder: '********',
-    },
-  ];
+  const navigate = useNavigate();
 
-  const onSubmit = (data: SignupSchema) => {};
+  const mutation = useMutation({
+    mutationFn: signupApi,
+    onSuccess: (data) => {
+      toast.success(data.message);
+      navigate('/login');
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) toast.error(error.response?.data?.message);
+      else toast.error(error.message);
+    },
+  });
 
   return (
     <div className="relative flex h-auto min-h-screen items-center justify-center overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8">
@@ -75,7 +92,8 @@ const SignupPage = () => {
             <AuthForm
               fields={fields}
               form={form}
-              onSubmit={(values: SignupSchema) => console.log(values)}
+              onSubmit={(data) => mutation.mutate(data)}
+              isLoading={mutation.isPending}
             />
 
             <p className="text-muted-foreground text-center">

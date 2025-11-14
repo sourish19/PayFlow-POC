@@ -1,4 +1,4 @@
-import { axiosInstance } from '@/config/axios';
+import { axiosInstance, isProd } from '@/config/axios';
 
 import { authApiResScheam } from '@/validations/authValidation';
 
@@ -10,14 +10,14 @@ import type {
 export const loginApi = async (body: LoginSchema) => {
   try {
     const res = await axiosInstance.post<AuthApiResScheam>(
-      '/api/v1/signin',
+      '/api/v1/user/signin',
       body
     );
-    const data = authApiResScheam.parse(res.data);
-    console.log('Login data --> ', data);
-    return data;
+    const data = authApiResScheam.parse(res.data.data);
+    if (!isProd) console.log('Login data --> ', data);
+    return { data, message: res.data.message };
   } catch (error) {
-    console.error(error);
+    if (!isProd) console.error('Error in Login --> ', error);
     throw error;
   }
 };

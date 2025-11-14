@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '../ui/spinner';
 import type { FieldValues, UseFormReturn, Path } from 'react-hook-form';
 
 export type FieldConfig<T extends FieldValues> = {
@@ -24,12 +25,14 @@ type AuthFormProps<T extends FieldValues> = {
   fields: FieldConfig<T>[];
   form: UseFormReturn<T>;
   onSubmit: (values: T) => void;
+  isLoading: boolean;
 };
 
 function AuthForm<T extends FieldValues>({
   fields,
   form,
   onSubmit,
+  isLoading,
 }: AuthFormProps<T>) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -95,7 +98,7 @@ function AuthForm<T extends FieldValues>({
           type="submit"
           className="bg-primary hover:bg-primary/90 h-11 w-full rounded-xl text-base font-medium shadow-sm transition-all"
         >
-          Submit
+          {isLoading ? <Spinner /> : 'Submit'}
         </Button>
       </form>
     </Form>

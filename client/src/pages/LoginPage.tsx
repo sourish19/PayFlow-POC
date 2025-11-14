@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { isAxiosError } from 'axios';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,12 +14,30 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
+
+import { loginApi } from '@/api/auth/login';
 
 import AuthForm from '@/components/auth/AuthForm';
 import { loginSchema } from '@/validations/authValidation';
 
 import type { LoginSchema } from '@/validations/authValidation';
 import type { FieldConfig } from '@/components/auth/AuthForm';
+
+const fields: FieldConfig<LoginSchema>[] = [
+  {
+    name: 'email',
+    label: 'Email',
+    type: 'email',
+    placeholder: 'jhondoe@example.com',
+  },
+  {
+    name: 'password',
+    label: 'Password',
+    type: 'password',
+    placeholder: '********',
+  },
+];
 
 const LoginPage = () => {
   const form = useForm<LoginSchema>({
@@ -28,22 +49,19 @@ const LoginPage = () => {
     },
   });
 
-  const fields: FieldConfig<LoginSchema>[] = [
-    {
-      name: 'email',
-      label: 'Email',
-      type: 'email',
-      placeholder: 'jhondoe@example.com',
-    },
-    {
-      name: 'password',
-      label: 'Password',
-      type: 'password',
-      placeholder: '********',
-    },
-  ];
+  const navigate = useNavigate();
 
-  // const onSubmit = () => {};
+  const mutation = useMutation({
+    mutationFn: loginApi,
+    onSuccess: (data) => {
+      toast.success(data.message);
+      navigate('/');
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) toast.error(error.response?.data?.message);
+      else toast.error(error.message);
+    },
+  });
 
   return (
     <div className="relative flex h-auto min-h-screen items-center justify-center overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8">
@@ -65,7 +83,8 @@ const LoginPage = () => {
             <AuthForm
               fields={fields}
               form={form}
-              onSubmit={(values: LoginSchema) => console.log(values)}
+              onSubmit={(data) => mutation.mutate(data)}
+              isLoading={mutation.isPending}
             />
 
             <p className="text-muted-foreground text-center">
