@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
-import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { UseFormReturn } from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,16 +16,11 @@ import { Separator } from '@/components/ui/separator';
 import AuthForm from '@/components/auth/AuthForm';
 import { signupSchema } from '@/validations/authValidation';
 
+import type { SignupSchema } from '@/validations/authValidation';
 import type { FieldConfig } from '@/components/auth/AuthForm';
 
-export type SignupFormProps = {
-  type: 'signup';
-  form: UseFormReturn<z.infer<typeof signupSchema>>;
-  onSubmit: (values: z.infer<typeof signupSchema>) => void;
-};
-
 const SignupPage = () => {
-  const form = useForm<z.infer<typeof signupSchema>>({
+  const form = useForm<SignupSchema>({
     resolver: zodResolver(signupSchema),
     mode: 'onChange',
     defaultValues: {
@@ -37,14 +31,29 @@ const SignupPage = () => {
     },
   });
 
-  const fields: FieldConfig<z.infer<typeof signupSchema>>[] = [
-    { name: 'firstName', label: 'First Name', type: 'text' },
-    { name: 'lastName', label: 'Last Name', type: 'text' },
-    { name: 'email', label: 'Email', type: 'email' },
-    { name: 'password', label: 'Password', type: 'password' },
+  const fields: FieldConfig<SignupSchema>[] = [
+    {
+      name: 'firstName',
+      label: 'First Name',
+      type: 'text',
+      placeholder: 'John',
+    },
+    { name: 'lastName', label: 'Last Name', type: 'text', placeholder: 'Doe' },
+    {
+      name: 'email',
+      label: 'Email',
+      type: 'email',
+      placeholder: 'jhondoe@example.com',
+    },
+    {
+      name: 'password',
+      label: 'Password',
+      type: 'password',
+      placeholder: '********',
+    },
   ];
 
-  //   const onSubmit = (data: z.infer<typeof signupSchema>) => {};
+  const onSubmit = (data: SignupSchema) => {};
 
   return (
     <div className="relative flex h-auto min-h-screen items-center justify-center overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8">
@@ -66,9 +75,7 @@ const SignupPage = () => {
             <AuthForm
               fields={fields}
               form={form}
-              onSubmit={(values: z.infer<typeof signupSchema>) =>
-                console.log(values)
-              }
+              onSubmit={(values: SignupSchema) => console.log(values)}
             />
 
             <p className="text-muted-foreground text-center">

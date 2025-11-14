@@ -19,3 +19,14 @@ export const loginSchema = z.object({
     .string()
     .min(6, { message: 'Password should be at least 6 characters long' }),
 });
+
+export const authApiResScheam = z.object({
+  email: z.string(),
+  fullName: z.string(),
+  id: z.string(),
+});
+
+export type SignupSchema = z.infer<typeof signupSchema>;
+export type LoginSchema = z.infer<typeof loginSchema>;
+
+export type AuthApiResScheam = z.infer<typeof authApiResScheam>;
