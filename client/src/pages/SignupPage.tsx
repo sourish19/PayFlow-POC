@@ -1,8 +1,7 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 
 import { Button } from '@/components/ui/button';
@@ -87,7 +86,7 @@ const SignupPage = () => {
         </CardHeader>
 
         <CardContent>
-          {/* Login Form */}
+          {/* Sigbup Form */}
           <div className="space-y-4">
             <AuthForm
               fields={fields}
