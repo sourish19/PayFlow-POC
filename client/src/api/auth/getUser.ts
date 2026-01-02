@@ -2,11 +2,11 @@ import { axiosInstance, isProd } from '@/config/axios';
 
 import { authApiResScheam } from '@/validations/authValidation';
 
-import type { AuthApiResScheam } from '@/validations/authValidation';
+import type { AuthApiResSchema } from '@/validations/authValidation';
 
 export const getUserApi = async () => {
   try {
-    const res = await axiosInstance.get<AuthApiResScheam>(
+    const res = await axiosInstance.get<AuthApiResSchema>(
       '/api/v1/user/getUser'
     );
     const data = authApiResScheam.parse(res.data.data);

@@ -53,7 +53,7 @@ export const authApiResScheam = z.object({
 export type SignupSchema = z.infer<typeof signupSchema>;
 export type LoginSchema = z.infer<typeof loginSchema>;
 
-export type AuthApiResScheam = {
+export type AuthApiResSchema = {
   success: boolean;
   status: number;
   message: string;

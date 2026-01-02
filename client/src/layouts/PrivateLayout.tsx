@@ -23,13 +23,13 @@ const PrivateLayout = () => {
       } else {
         toast.error(error.message);
       }
-      navigate("/login", { replace: true });
+      navigate('/login', { replace: true });
     }
   }, [isError, error, navigate]);
 
   if (isPending) {
     return (
-      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-black">
         <Spinner className="size-10" />
       </div>
     );
@@ -37,7 +37,7 @@ const PrivateLayout = () => {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-neutral-900">
+      <div className="min-h-screen bg-black">
         <Outlet />
       </div>
     );
