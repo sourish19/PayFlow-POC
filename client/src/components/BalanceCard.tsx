@@ -4,11 +4,10 @@ import { Card, CardContent } from './ui/card';
 import { getUserAccBalance } from '@/api/payments/getUserBalance';
 
 const BalanceCard = () => {
-  const {data,isSuccess} = useQuery({
+  const { data, isSuccess } = useQuery({
     queryKey: ['balance'],
-    queryFn: getUserAccBalance
-  })
-
+    queryFn: getUserAccBalance,
+  });
 
   return (
     <Card className="rounded-2xl border border-neutral-800 bg-neutral-900 text-white shadow-md">

@@ -10,7 +10,7 @@ export const getUserAccBalance = async () => {
     const res = await axiosInstance.get<UserAccountBalance>(
       '/api/v1/account/balance'
     );
-    const data = UserAccountBalanceSchema.parse(res.data.data)
+    const data = UserAccountBalanceSchema.parse(res.data.data);
     if (!isProd) console.log('getUserAccBalance data --> ', data);
     return data;
   } catch (error) {
