@@ -18,12 +18,14 @@ import { toast } from 'sonner';
 import { loginApi } from '@/api/auth/login';
 
 import AuthForm from '@/components/auth/AuthForm';
-import { loginSchema } from '@/validations/authValidation';
+import {
+  UserLoginSchema,
+  type UserLoginPayload,
+} from '@/validations/authValidation';
 
-import type { LoginSchema } from '@/validations/authValidation';
 import type { FieldConfig } from '@/components/auth/AuthForm';
 
-const fields: FieldConfig<LoginSchema>[] = [
+const fields: FieldConfig<UserLoginPayload>[] = [
   {
     name: 'email',
     label: 'Email',
@@ -39,8 +41,8 @@ const fields: FieldConfig<LoginSchema>[] = [
 ];
 
 const LoginPage = () => {
-  const form = useForm<LoginSchema>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<UserLoginPayload>({
+    resolver: zodResolver(UserLoginSchema),
     mode: 'onChange',
     defaultValues: {
       email: '',

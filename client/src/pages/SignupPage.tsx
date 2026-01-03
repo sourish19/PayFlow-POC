@@ -16,14 +16,14 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 
 import AuthForm from '@/components/auth/AuthForm';
-import { signupSchema } from '@/validations/authValidation';
+import { UserSignupSchema } from '@/validations/authValidation';
 
-import type { SignupSchema } from '@/validations/authValidation';
+import type { UserSignupPayload } from '@/validations/authValidation';
 import type { FieldConfig } from '@/components/auth/AuthForm';
 
 import { signupApi } from '@/api/auth/signup';
 
-const fields: FieldConfig<SignupSchema>[] = [
+const fields: FieldConfig<UserSignupPayload>[] = [
   {
     name: 'firstName',
     label: 'First Name',
@@ -46,8 +46,8 @@ const fields: FieldConfig<SignupSchema>[] = [
 ];
 
 const SignupPage = () => {
-  const form = useForm<SignupSchema>({
-    resolver: zodResolver(signupSchema),
+  const form = useForm<UserSignupPayload>({
+    resolver: zodResolver(UserSignupSchema),
     mode: 'onChange',
     defaultValues: {
       firstName: '',

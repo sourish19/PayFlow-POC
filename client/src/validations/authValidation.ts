@@ -1,21 +1,10 @@
 import * as z from 'zod';
 
-const UserValidationSchema = z.object({
-  firstName: z
-    .string()
-    .trim()
-    .min(3, { message: 'First Name must be at least 3 characters' })
-    .max(20, { message: 'First Name cannot exceed 50 characters' }),
-
-  lastName: z
-    .string()
-    .trim()
-    .min(3, { message: 'Last Name must be at least 3 characters' })
-    .max(20, { message: 'Last Name cannot exceed 50 characters' }),
-
+export const UserCredentialsSchema = z.object({
   email: z
+    .string()
     .email({ message: 'Invalid email address' })
-    .transform((val) => val.toLowerCase()),
+    .transform((value) => value.toLowerCase()),
 
   password: z.string().pipe(
     z
@@ -37,25 +26,46 @@ const UserValidationSchema = z.object({
   ),
 });
 
-export const signupSchema = UserValidationSchema;
+export const UserProfileSchema = z.object({
+  firstName: z
+    .string()
+    .trim()
+    .min(3, { message: 'First name must be at least 3 characters' })
+    .max(50, { message: 'First name cannot exceed 50 characters' }),
 
-export const loginSchema = UserValidationSchema.pick({
-  email: true,
-  password: true,
+  lastName: z
+    .string()
+    .trim()
+    .min(3, { message: 'Last name must be at least 3 characters' })
+    .max(50, { message: 'Last name cannot exceed 50 characters' }),
 });
 
-export const authApiResScheam = z.object({
+export const UserSignupSchema = UserProfileSchema.and(UserCredentialsSchema);
+
+export const UserLoginSchema = UserCredentialsSchema;
+
+export const AuthUserSchema = z.object({
+  id: z.string(),
   email: z.string(),
   fullName: z.string(),
-  id: z.string(),
 });
 
-export type SignupSchema = z.infer<typeof signupSchema>;
-export type LoginSchema = z.infer<typeof loginSchema>;
+export const AuthApiResponseSchema = z.object({
+  success: z.boolean(),
+  status: z.number(),
+  message: z.string(),
+  data: AuthUserSchema,
+});
 
-export type AuthApiResSchema = {
-  success: boolean;
-  status: number;
-  message: string;
-  data: z.infer<typeof authApiResScheam>;
-};
+export const SearchUsersResponseSchema = z.object({
+  success: z.boolean(),
+  status: z.number(),
+  message: z.string(),
+  data: z.array(AuthUserSchema),
+});
+
+export type UserSignupPayload = z.infer<typeof UserSignupSchema>;
+export type UserLoginPayload = z.infer<typeof UserLoginSchema>;
+
+export type AuthApiResponse = z.infer<typeof AuthApiResponseSchema>;
+export type SearchUsersResponse = z.infer<typeof SearchUsersResponseSchema>;
