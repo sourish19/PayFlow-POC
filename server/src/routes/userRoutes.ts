@@ -13,7 +13,7 @@ const userRouter = Router();
 
 userRouter.route('/signup').post(isAlreadyLoggedIn, signup);
 userRouter.route('/signin').post(isAlreadyLoggedIn, signin);
-userRouter.route('/').get(isLoggedIn, getUser);
+userRouter.route('/getUser').get(isLoggedIn, getUser);
 userRouter.route('/bulk').get(isLoggedIn, getFilteredUser);
 
 export default userRouter;

@@ -114,7 +114,8 @@ export const getFilteredUser = asyncHandler(async (req, res) => {
     ],
   }).select('-password -token');
 
-  if (!findUsers) throw new NotFoundError('Users not found');
+  if (!findUsers || findUsers.length === 0)
+    throw new NotFoundError('Users not found');
 
   const santizedData = findUsers.map((user) => {
     return sanatizeUser(user);
@@ -124,3 +125,7 @@ export const getFilteredUser = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, 'Users found successfully', santizedData));
 });
+
+// export const getAllUser = asyncHandler(async(req,res)=>{
+
+// })

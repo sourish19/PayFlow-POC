@@ -66,7 +66,7 @@ export const transferMoney = asyncHandler(async (req, res) => {
       { session }
     );
 
-    await session.commitTransaction()
+    await session.commitTransaction();
 
     return res
       .status(200)
