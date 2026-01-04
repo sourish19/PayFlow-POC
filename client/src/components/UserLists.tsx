@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { searchUsers } from '@/api/auth/searchUser';
+import { getUserApi } from '@/api/auth/getUser';
 
 import UserRow from './UserRow';
 import { Input } from './ui/input';
@@ -11,17 +12,29 @@ const UserLists = () => {
   const { data } = useQuery({
     queryKey: ['searchedUsers', keyword],
     queryFn: () => searchUsers(keyword),
+    staleTime: 30 * 1000,
+  });
+
+  const { data: userData } = useQuery({
+    queryKey: ['user'],
+    queryFn: getUserApi,
+    staleTime: 2 * 60 * 1000,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value !== '') setKeyword(e.target.value);
+    setKeyword(e.target.value);
   };
+
+  const filteredUsers =
+    data?.data.filter((user) => user.id !== userData?.data.id) ?? [];
 
   return (
     <div className="mt-8 text-white">
       <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold tracking-tight">
         Users
-        <span className="text-xs text-neutral-500">({data?.data.length})</span>
+        <span className="text-xs text-neutral-500">
+          ({filteredUsers.length})
+        </span>
       </h2>
 
       <Input
@@ -31,8 +44,13 @@ const UserLists = () => {
       />
 
       <div className="flex flex-col gap-4">
-        {data?.data.map((user) => (
-          <UserRow id={user.id} email={user.email} fullName={user.fullName} />
+        {filteredUsers.map((user) => (
+          <UserRow
+            key={user.id}
+            id={user.id}
+            email={user.email}
+            fullName={user.fullName}
+          />
         ))}
       </div>
     </div>

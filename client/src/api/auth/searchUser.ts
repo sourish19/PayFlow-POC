@@ -10,8 +10,6 @@ export const searchUsers = async (keyword: string) => {
     const res = await axiosInstance.get<SearchUsersResponse>(
       `/api/v1/user/bulk?filter=${keyword}`
     );
-    console.log(res.data);
-
     const parsedData = SearchUsersResponseSchema.parse(res.data);
     if (!isProd) console.log('search user data --> ', parsedData);
     return { data: parsedData.data, message: parsedData.message };

@@ -7,6 +7,7 @@ const DashboardHeader = () => {
   const { data, isError, isSuccess } = useQuery({
     queryKey: ['user'],
     queryFn: getUserApi,
+    staleTime: 2 * 60 * 1000,
   });
 
   const navigate = useNavigate();

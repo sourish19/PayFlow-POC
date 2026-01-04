@@ -9,7 +9,7 @@ export const getUserApi = async () => {
   try {
     const res = await axiosInstance.get<AuthApiResponse>(
       '/api/v1/user/getUser'
-    );    
+    );
     const parsedData = AuthApiResponseSchema.parse(res.data);
     if (!isProd) console.log('getUser data --> ', parsedData);
     return { data: parsedData.data, message: parsedData.message };
